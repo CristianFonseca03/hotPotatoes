@@ -47,8 +47,8 @@ LA ARDILLA
 	--strNavShadeColor:  #000000;
 	--strNavTextColor:   #ffffff;
 	
-	--strPageBGColor:    #C0C0C0;
-	--strExBGColor:      #FFFFFF;
+	--strPageBGColor:    #408080;
+	--strExBGColor:      #ffffff;
 }
 
 body{
@@ -980,7 +980,7 @@ var ShuffleQs = false;
 var ShuffleAs = false;
 var DefaultRight = 'Correcto,';
 var DefaultWrong = 'Incorrecto, intentalo de nuevo.';
-var QsToShow = 6;
+var QsToShow = 11;
 var Score = 0;
 var Finished = false;
 var Qs = null;
@@ -1211,6 +1211,36 @@ I[5][3][0]=new Array('una noticia de actualidad.','Intentalo de nuevo.',0,0,1);
 I[5][3][1]=new Array('un art\u00EDculo enciclop\u00E9dico.','Correcto.',1,100,1);
 I[5][3][2]=new Array('un cuento fant\u00E1stico.','Intentalo de nuevo.',0,0,1);
 I[5][3][3]=new Array('una leyenda tradicional.','Intentalo de nuevo.',0,0,1);
+I[6]=new Array();I[6][0]=100;
+I[6][1]='';
+I[6][2]='0';
+I[6][3]=new Array();
+I[6][3][0]=new Array('SI','',1,100,1);
+I[6][3][1]=new Array('NO','',1,100,1);
+I[7]=new Array();I[7][0]=100;
+I[7][1]='';
+I[7][2]='0';
+I[7][3]=new Array();
+I[7][3][0]=new Array('SI','',1,100,1);
+I[7][3][1]=new Array('NO','',1,100,1);
+I[8]=new Array();I[8][0]=100;
+I[8][1]='';
+I[8][2]='0';
+I[8][3]=new Array();
+I[8][3][0]=new Array('SI','',1,100,1);
+I[8][3][1]=new Array('NO','',1,100,1);
+I[9]=new Array();I[9][0]=100;
+I[9][1]='';
+I[9][2]='0';
+I[9][3]=new Array();
+I[9][3][0]=new Array('SI','',1,100,1);
+I[9][3][1]=new Array('NO','',1,100,1);
+I[10]=new Array();I[10][0]=100;
+I[10][1]='';
+I[10][2]='0';
+I[10][3]=new Array();
+I[10][3][0]=new Array('SI','',1,100,1);
+I[10][3][1]=new Array('NO','',1,100,1);
 
 
 function StartUp(){
@@ -1591,7 +1621,7 @@ function CheckFinished(){
 <div class="Titles">
 	<h2 class="ExerciseTitle">LA ARDILLA</h2>
 
-	<h3 class="ExerciseSubtitle">Quiz</h3>
+	<h3 class="ExerciseSubtitle">JQuiz y JCloze</h3>
 
 
 
@@ -1610,7 +1640,7 @@ function CheckFinished(){
 	<div id="Reading">
 
 		<div id="ReadingDiv">
-<h3 class="ExerciseSubtitle">LA ARDILLA</h3><div class="ReadingText">Existen unas 200 especies de ardillas que viven en todo el mundo. La ardilla m&#x00E1;s<br />peque&#x00F1;a es la ardilla pigmea africana, que mide 13 cent&#x00ED;metros; la ardilla gigante<br />hind&#x00FA; mide casi un metro. Los cuatro dientes frontales de las ardillas nunca dejan<br />de crecer, por lo que no se desgastan. Las ardillas viven en &#x00E1;rboles, madrigueras<br />o t&#x00FA;neles.<br />Su alimentaci&#x00F3;n se basa en frutos secos, hojas, ra&#x00ED;ces, semillas y otras plantas.<br />Tambi&#x00E9;n pueden atrapar y comer animales peque&#x00F1;os. Estos mam&#x00ED;feros tienen que<br />estar siempre en guardia, pues para algunos depredadores son exquisitos<br />bocados.<br />Las ardillas voladoras constituyen otro tipo de ardillas. Abren sus patas y se<br />Deslizan de &#x00E1;rbol en &#x00E1;rbol. Estos &#x201C;saltos&#x201D; que se les hacen planear en el aire<br />pueden superar los 46 metros.</div>
+<h3 class="ExerciseSubtitle">LA ARDILLA</h3><div class="ReadingText">Existen unas 200 especies de ardillas que viven en todo el mundo.<br />La ardilla m&#x00E1;s peque&#x00F1;a es la ardilla pigmea africana, que mide 13 cent&#x00ED;metros;<br />la ardilla gigante hind&#x00FA; mide casi un metro. <br />Los cuatro dientes frontales de las ardillas nunca dejan de crecer, por lo que no se desgastan. <br />Las ardillas viven en &#x00E1;rboles, madrigueras o t&#x00FA;neles.<br />Su alimentaci&#x00F3;n se basa en frutos secos, hojas, ra&#x00ED;ces, semillas y otras plantas.<br />Tambi&#x00E9;n pueden atrapar y comer animales peque&#x00F1;os. <br />Estos mam&#x00ED;feros tienen que estar siempre en guardia, pues para algunos depredadores son exquisitos bocados.<br />Las ardillas voladoras constituyen otro tipo de ardillas.<br />Abren sus patas y se deslizan de &#x00E1;rbol en &#x00E1;rbol. <br />Estos &#x201C;saltos&#x201D; que se les hacen planear en el aire pueden superar los 46 metros.</div>
 		</div>
 	</div>
 
@@ -1643,7 +1673,12 @@ function CheckFinished(){
 <li class="QuizQuestion" id="Q_2" style="display: none;"><div class="QuestionText">Otro t&#x00ED;tulo posible para el texto es</div><ol class="MCAnswers"><li id="Q_2_0"><button class="FuncButton" id="Q_2_0_Btn" onclick="CheckMCAnswer(2,0,this)">&nbsp;&nbsp;?&nbsp;&nbsp;</button>&nbsp;&nbsp;Los mam&#x00ED;feros dientones</li><li id="Q_2_1"><button class="FuncButton" id="Q_2_1_Btn" onclick="CheckMCAnswer(2,1,this)">&nbsp;&nbsp;?&nbsp;&nbsp;</button>&nbsp;&nbsp;Animales en vuelo: una aventura</li><li id="Q_2_2"><button class="FuncButton" id="Q_2_2_Btn" onclick="CheckMCAnswer(2,2,this)">&nbsp;&nbsp;?&nbsp;&nbsp;</button>&nbsp;&nbsp;&#x00BF;Qu&#x00E9; comen las ardillas?</li><li id="Q_2_3"><button class="FuncButton" id="Q_2_3_Btn" onclick="CheckMCAnswer(2,3,this)">&nbsp;&nbsp;?&nbsp;&nbsp;</button>&nbsp;&nbsp;&#x00A1;Vamos a conocer a las ardillas!</li></ol></li>
 <li class="QuizQuestion" id="Q_3" style="display: none;"><div class="QuestionText">Del texto, se puede concluir que</div><ol class="MCAnswers"><li id="Q_3_0"><button class="FuncButton" id="Q_3_0_Btn" onclick="CheckMCAnswer(3,0,this)">&nbsp;&nbsp;?&nbsp;&nbsp;</button>&nbsp;&nbsp;las ardillas compiten por comida.</li><li id="Q_3_1"><button class="FuncButton" id="Q_3_1_Btn" onclick="CheckMCAnswer(3,1,this)">&nbsp;&nbsp;?&nbsp;&nbsp;</button>&nbsp;&nbsp;las ardillas son conocidas en casi todo el mundo.</li><li id="Q_3_2"><button class="FuncButton" id="Q_3_2_Btn" onclick="CheckMCAnswer(3,2,this)">&nbsp;&nbsp;?&nbsp;&nbsp;</button>&nbsp;&nbsp;las ardillas tienen alas escondidas.</li><li id="Q_3_3"><button class="FuncButton" id="Q_3_3_Btn" onclick="CheckMCAnswer(3,3,this)">&nbsp;&nbsp;?&nbsp;&nbsp;</button>&nbsp;&nbsp;las ardillas son m&#x00E1;s salvajes que<br />otros animales.</li></ol></li>
 <li class="QuizQuestion" id="Q_4" style="display: none;"><div class="QuestionText">En el texto, se nombran tres tipos de ardillas para</div><ol class="MCAnswers"><li id="Q_4_0"><button class="FuncButton" id="Q_4_0_Btn" onclick="CheckMCAnswer(4,0,this)">&nbsp;&nbsp;?&nbsp;&nbsp;</button>&nbsp;&nbsp;mostrar las caracter&#x00ED;sticas de estas<br />especies.</li><li id="Q_4_1"><button class="FuncButton" id="Q_4_1_Btn" onclick="CheckMCAnswer(4,1,this)">&nbsp;&nbsp;?&nbsp;&nbsp;</button>&nbsp;&nbsp;generar inter&#x00E9;s en el estudio de<br />animales.</li><li id="Q_4_2"><button class="FuncButton" id="Q_4_2_Btn" onclick="CheckMCAnswer(4,2,this)">&nbsp;&nbsp;?&nbsp;&nbsp;</button>&nbsp;&nbsp;explicar c&#x00F3;mo defienden su territorio.</li><li id="Q_4_3"><button class="FuncButton" id="Q_4_3_Btn" onclick="CheckMCAnswer(4,3,this)">&nbsp;&nbsp;?&nbsp;&nbsp;</button>&nbsp;&nbsp;exponer sus h&#x00E1;bitos de alimentaci&#x00F3;n.</li></ol></li>
-<li class="QuizQuestion" id="Q_5" style="display: none;"><div class="QuestionText">El texto anterior es</div><ol class="MCAnswers"><li id="Q_5_0"><button class="FuncButton" id="Q_5_0_Btn" onclick="CheckMCAnswer(5,0,this)">&nbsp;&nbsp;?&nbsp;&nbsp;</button>&nbsp;&nbsp;una noticia de actualidad.</li><li id="Q_5_1"><button class="FuncButton" id="Q_5_1_Btn" onclick="CheckMCAnswer(5,1,this)">&nbsp;&nbsp;?&nbsp;&nbsp;</button>&nbsp;&nbsp;un art&#x00ED;culo enciclop&#x00E9;dico.</li><li id="Q_5_2"><button class="FuncButton" id="Q_5_2_Btn" onclick="CheckMCAnswer(5,2,this)">&nbsp;&nbsp;?&nbsp;&nbsp;</button>&nbsp;&nbsp;un cuento fant&#x00E1;stico.</li><li id="Q_5_3"><button class="FuncButton" id="Q_5_3_Btn" onclick="CheckMCAnswer(5,3,this)">&nbsp;&nbsp;?&nbsp;&nbsp;</button>&nbsp;&nbsp;una leyenda tradicional.</li></ol></li></ol>
+<li class="QuizQuestion" id="Q_5" style="display: none;"><div class="QuestionText">El texto anterior es</div><ol class="MCAnswers"><li id="Q_5_0"><button class="FuncButton" id="Q_5_0_Btn" onclick="CheckMCAnswer(5,0,this)">&nbsp;&nbsp;?&nbsp;&nbsp;</button>&nbsp;&nbsp;una noticia de actualidad.</li><li id="Q_5_1"><button class="FuncButton" id="Q_5_1_Btn" onclick="CheckMCAnswer(5,1,this)">&nbsp;&nbsp;?&nbsp;&nbsp;</button>&nbsp;&nbsp;un art&#x00ED;culo enciclop&#x00E9;dico.</li><li id="Q_5_2"><button class="FuncButton" id="Q_5_2_Btn" onclick="CheckMCAnswer(5,2,this)">&nbsp;&nbsp;?&nbsp;&nbsp;</button>&nbsp;&nbsp;un cuento fant&#x00E1;stico.</li><li id="Q_5_3"><button class="FuncButton" id="Q_5_3_Btn" onclick="CheckMCAnswer(5,3,this)">&nbsp;&nbsp;?&nbsp;&nbsp;</button>&nbsp;&nbsp;una leyenda tradicional.</li></ol></li>
+<li class="QuizQuestion" id="Q_6" style="display: none;"><div class="QuestionText">Recibe instrucciones por parte del docente para acceder a las actividades de<br />Hotpotatoes plasmadas en cuadernia.</div><ol class="MCAnswers"><li id="Q_6_0"><button class="FuncButton" id="Q_6_0_Btn" onclick="CheckMCAnswer(6,0,this)">&nbsp;&nbsp;?&nbsp;&nbsp;</button>&nbsp;&nbsp;SI</li><li id="Q_6_1"><button class="FuncButton" id="Q_6_1_Btn" onclick="CheckMCAnswer(6,1,this)">&nbsp;&nbsp;?&nbsp;&nbsp;</button>&nbsp;&nbsp;NO</li></ol></li>
+<li class="QuizQuestion" id="Q_7" style="display: none;"><div class="QuestionText">Las actividades propuestas en cuadernia refleja creatividad e ingenio.</div><ol class="MCAnswers"><li id="Q_7_0"><button class="FuncButton" id="Q_7_0_Btn" onclick="CheckMCAnswer(7,0,this)">&nbsp;&nbsp;?&nbsp;&nbsp;</button>&nbsp;&nbsp;SI</li><li id="Q_7_1"><button class="FuncButton" id="Q_7_1_Btn" onclick="CheckMCAnswer(7,1,this)">&nbsp;&nbsp;?&nbsp;&nbsp;</button>&nbsp;&nbsp;NO</li></ol></li>
+<li class="QuizQuestion" id="Q_8" style="display: none;"><div class="QuestionText">Durante la ejecuci&#x00F3;n de las actividades propuestas por el docente ha tenido f&#x00E1;cil<br />acceso al uso de recursos tecnol&#x00F3;gicos (computadores) para su desarrollo.</div><ol class="MCAnswers"><li id="Q_8_0"><button class="FuncButton" id="Q_8_0_Btn" onclick="CheckMCAnswer(8,0,this)">&nbsp;&nbsp;?&nbsp;&nbsp;</button>&nbsp;&nbsp;SI</li><li id="Q_8_1"><button class="FuncButton" id="Q_8_1_Btn" onclick="CheckMCAnswer(8,1,this)">&nbsp;&nbsp;?&nbsp;&nbsp;</button>&nbsp;&nbsp;NO</li></ol></li>
+<li class="QuizQuestion" id="Q_9" style="display: none;"><div class="QuestionText">Los talleres trabajados en la herramienta te han parecido llamativos y<br />entendibles.</div><ol class="MCAnswers"><li id="Q_9_0"><button class="FuncButton" id="Q_9_0_Btn" onclick="CheckMCAnswer(9,0,this)">&nbsp;&nbsp;?&nbsp;&nbsp;</button>&nbsp;&nbsp;SI</li><li id="Q_9_1"><button class="FuncButton" id="Q_9_1_Btn" onclick="CheckMCAnswer(9,1,this)">&nbsp;&nbsp;?&nbsp;&nbsp;</button>&nbsp;&nbsp;NO</li></ol></li>
+<li class="QuizQuestion" id="Q_10" style="display: none;"><div class="QuestionText">El docente presenta buena aptitud y motivaci&#x00F3;n al momento de fomentar el<br />auto aprendizaje con los recursos.</div><ol class="MCAnswers"><li id="Q_10_0"><button class="FuncButton" id="Q_10_0_Btn" onclick="CheckMCAnswer(10,0,this)">&nbsp;&nbsp;?&nbsp;&nbsp;</button>&nbsp;&nbsp;SI</li><li id="Q_10_1"><button class="FuncButton" id="Q_10_1_Btn" onclick="CheckMCAnswer(10,1,this)">&nbsp;&nbsp;?&nbsp;&nbsp;</button>&nbsp;&nbsp;NO</li></ol></li></ol>
 
 
 

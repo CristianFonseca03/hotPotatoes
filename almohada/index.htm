@@ -42,13 +42,13 @@ La almohada
 	--strLinkColor:      #0000FF;
 	--strVLinkColor:     #0000CC;
 	
-	--strNavBarColor:    #000000;
-	--strNavLightColor:  #7f7f7f;
-	--strNavShadeColor:  #000000;
-	--strNavTextColor:   #ffffff;
+	--strNavBarColor:    #0080ff;
+	--strNavLightColor:  #7fbfff;
+	--strNavShadeColor:  #00407f;
+	--strNavTextColor:   #000000;
 	
-	--strPageBGColor:    #C0C0C0;
-	--strExBGColor:      #FFFFFF;
+	--strPageBGColor:    #408080;
+	--strExBGColor:      #ffffff;
 }
 
 body{
@@ -703,6 +703,8 @@ function ShowMessage(Feedback){
 	setTimeout("document.getElementById('FeedbackOKButton').focus()", 50);
 	
 //
+//	RefreshImages();
+//
 }
 
 function ShowElements(Show, TagName, ContainerToReverse){
@@ -857,9 +859,29 @@ function Shuffle(InArray){
 function WriteToInstructions(Feedback) {
 	document.getElementById('InstructionsDiv').innerHTML = Feedback;
 
+	RefreshImages();
+
 }
 
 
+
+Imgs = new Array();
+
+function PreloadImages(){
+	var a = PreloadImages.arguments;
+	for (var i=0; i<a.length; i++){
+		Imgs[i] = new Image();
+		Imgs[i].src = a[i];
+	}
+}
+
+function RefreshImages(){
+	for (var i=0; i<document.images.length; i++){
+		if (document.images[i].name.substring(0,6) != 'NavBar'){
+			document.images[i].src = document.images[i].src;
+		}
+	}
+}
 
 
 function EscapeDoubleQuotes(InString){
@@ -1228,6 +1250,8 @@ function StartUp(){
 
 	
 
+	PreloadImages('https://cdn.xl.thumbs.canstockphoto.es/-dibujo_csp51577398.jpg');
+
 	
 	CompleteEmptyFeedback();
 
@@ -1591,7 +1615,7 @@ function CheckFinished(){
 <div class="Titles">
 	<h2 class="ExerciseTitle">La almohada</h2>
 
-	<h3 class="ExerciseSubtitle">Quiz</h3>
+	<h3 class="ExerciseSubtitle">JQuiz y JCloze</h3>
 
 
 
@@ -1610,7 +1634,7 @@ function CheckFinished(){
 	<div id="Reading">
 
 		<div id="ReadingDiv">
-<h3 class="ExerciseSubtitle">La almohada</h3><div class="ReadingText">Soy muy bueno para dormir. De hecho, es lo mejor que s&#x00E9; hacer. Puedo dormir<br />parado, despu&#x00E9;s de la siesta echarme un sue&#x00F1;ito, dormir en el bus durante el<br />trayecto a la escuela. Por eso me apodan el Cobijas. Lo que nadie sabe es que<br />tengo un secreto: duermo con la misma almohada desde que era chiquito.<br />Yo no s&#x00E9; si a fuerza de tanto babearla, de roncar sobre ella o de tanto pegar mi<br />oreja a su funda, pero lo cierto es que mi almohada adquiri&#x00F3; poderes extra&#x00F1;os.<br /><br />Cr&#x00E9;anlo o no, la persona que duerme sobre ella puede pedirle so&#x00F1;ar con el tema<br />que quiera. Para que me crean, les voy a mostrar mi diario.</div>
+<h3 class="ExerciseSubtitle">La almohada</h3><div class="ReadingText"><img src="https://cdn.xl.thumbs.canstockphoto.es/-dibujo_csp51577398.jpg" alt="???" title="???" width="???" height="???"/><br />Soy muy bueno para dormir. <br />De hecho, es lo mejor que s&#x00E9; hacer. <br />Puedo dormir parado, despu&#x00E9;s de la siesta echarme un sue&#x00F1;ito, dormir en el bus durante el trayecto a la escuela. <br />Por eso me apodan el Cobijas. <br />Lo que nadie sabe es que tengo un secreto: duermo con la misma almohada desde que era chiquito.<br />Yo no s&#x00E9; si a fuerza de tanto babearla, de roncar sobre ella o de tanto pegar mi<br />oreja a su funda, pero lo cierto es que mi almohada adquiri&#x00F3; poderes extra&#x00F1;os.<br />Cr&#x00E9;anlo o no, la persona que duerme sobre ella puede pedirle so&#x00F1;ar con el tema que quiera. <br />Para que me crean, les voy a mostrar mi diario.</div>
 		</div>
 	</div>
 
