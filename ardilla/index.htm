@@ -703,6 +703,8 @@ function ShowMessage(Feedback){
 	setTimeout("document.getElementById('FeedbackOKButton').focus()", 50);
 	
 //
+//	RefreshImages();
+//
 }
 
 function ShowElements(Show, TagName, ContainerToReverse){
@@ -857,9 +859,29 @@ function Shuffle(InArray){
 function WriteToInstructions(Feedback) {
 	document.getElementById('InstructionsDiv').innerHTML = Feedback;
 
+	RefreshImages();
+
 }
 
 
+
+Imgs = new Array();
+
+function PreloadImages(){
+	var a = PreloadImages.arguments;
+	for (var i=0; i<a.length; i++){
+		Imgs[i] = new Image();
+		Imgs[i].src = a[i];
+	}
+}
+
+function RefreshImages(){
+	for (var i=0; i<document.images.length; i++){
+		if (document.images[i].name.substring(0,6) != 'NavBar'){
+			document.images[i].src = document.images[i].src;
+		}
+	}
+}
 
 
 function EscapeDoubleQuotes(InString){
@@ -1258,6 +1280,8 @@ function StartUp(){
 
 	
 
+	PreloadImages('https://lh3.googleusercontent.com/proxy/S-QADZoGgcGWk2J7FyPUZt2aeg8nn2-3dc05ohrEpWfkYxBEvaflPzh3A1x3ne0VNA6FRDxD5M-TwTaCEDItdjwS0bPy_H1cM5tT3rfpjLv9sHP9pWSbuiZ55nfkVhxA');
+
 	
 	CompleteEmptyFeedback();
 
@@ -1640,7 +1664,7 @@ function CheckFinished(){
 	<div id="Reading">
 
 		<div id="ReadingDiv">
-<h3 class="ExerciseSubtitle">LA ARDILLA</h3><div class="ReadingText">Existen unas 200 especies de ardillas que viven en todo el mundo.<br />La ardilla m&#x00E1;s peque&#x00F1;a es la ardilla pigmea africana, que mide 13 cent&#x00ED;metros;<br />la ardilla gigante hind&#x00FA; mide casi un metro. <br />Los cuatro dientes frontales de las ardillas nunca dejan de crecer, por lo que no se desgastan. <br />Las ardillas viven en &#x00E1;rboles, madrigueras o t&#x00FA;neles.<br />Su alimentaci&#x00F3;n se basa en frutos secos, hojas, ra&#x00ED;ces, semillas y otras plantas.<br />Tambi&#x00E9;n pueden atrapar y comer animales peque&#x00F1;os. <br />Estos mam&#x00ED;feros tienen que estar siempre en guardia, pues para algunos depredadores son exquisitos bocados.<br />Las ardillas voladoras constituyen otro tipo de ardillas.<br />Abren sus patas y se deslizan de &#x00E1;rbol en &#x00E1;rbol. <br />Estos &#x201C;saltos&#x201D; que se les hacen planear en el aire pueden superar los 46 metros.</div>
+<h3 class="ExerciseSubtitle">LA ARDILLA</h3><div class="ReadingText"><img src="https://lh3.googleusercontent.com/proxy/S-QADZoGgcGWk2J7FyPUZt2aeg8nn2-3dc05ohrEpWfkYxBEvaflPzh3A1x3ne0VNA6FRDxD5M-TwTaCEDItdjwS0bPy_H1cM5tT3rfpjLv9sHP9pWSbuiZ55nfkVhxA" alt="???" title="???" width="???" height="???" style="display: block; margin-left: auto; margin-right: auto; text-align: center;"/>Existen unas 200 especies de ardillas que viven en todo el mundo.<br />La ardilla m&#x00E1;s peque&#x00F1;a es la ardilla pigmea africana, que mide 13 cent&#x00ED;metros;<br />la ardilla gigante hind&#x00FA; mide casi un metro. <br />Los cuatro dientes frontales de las ardillas nunca dejan de crecer, por lo que no se desgastan. <br />Las ardillas viven en &#x00E1;rboles, madrigueras o t&#x00FA;neles.<br />Su alimentaci&#x00F3;n se basa en frutos secos, hojas, ra&#x00ED;ces, semillas y otras plantas.<br />Tambi&#x00E9;n pueden atrapar y comer animales peque&#x00F1;os. <br />Estos mam&#x00ED;feros tienen que estar siempre en guardia, pues para algunos depredadores son exquisitos bocados.<br />Las ardillas voladoras constituyen otro tipo de ardillas.<br />Abren sus patas y se deslizan de &#x00E1;rbol en &#x00E1;rbol. <br />Estos &#x201C;saltos&#x201D; que se les hacen planear en el aire pueden superar los 46 metros.</div>
 		</div>
 	</div>
 

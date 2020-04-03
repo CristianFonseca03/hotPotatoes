@@ -48,7 +48,7 @@ La lluvia
 	--strNavTextColor:   #ffffff;
 	
 	--strPageBGColor:    #408080;
-	--strExBGColor:      #FFFFFF;
+	--strExBGColor:      #ffffff;
 }
 
 body{
@@ -230,16 +230,6 @@ div.Feedback {
 	font-size: 1em;
 }
 
-
-
-
-.ReadingText{
-	text-align: left;
-}
-
-#ReadingDiv h3.ExerciseSubtitle{
-	color: var(--strTextColor);
-}
 
 
 
@@ -703,6 +693,8 @@ function ShowMessage(Feedback){
 	setTimeout("document.getElementById('FeedbackOKButton').focus()", 50);
 	
 //
+//	RefreshImages();
+//
 }
 
 function ShowElements(Show, TagName, ContainerToReverse){
@@ -857,9 +849,29 @@ function Shuffle(InArray){
 function WriteToInstructions(Feedback) {
 	document.getElementById('InstructionsDiv').innerHTML = Feedback;
 
+	RefreshImages();
+
 }
 
 
+
+Imgs = new Array();
+
+function PreloadImages(){
+	var a = PreloadImages.arguments;
+	for (var i=0; i<a.length; i++){
+		Imgs[i] = new Image();
+		Imgs[i].src = a[i];
+	}
+}
+
+function RefreshImages(){
+	for (var i=0; i<document.images.length; i++){
+		if (document.images[i].name.substring(0,6) != 'NavBar'){
+			document.images[i].src = document.images[i].src;
+		}
+	}
+}
 
 
 function EscapeDoubleQuotes(InString){
@@ -961,608 +973,412 @@ function ClearTextBoxes(){
 
 
 
-//JQUIZ CORE JAVASCRIPT CODE
+//JCLOZE CORE JAVASCRIPT CODE
 
-var CurrQNum = 0;
-var CorrectIndicator = '&#x2714;';
-var IncorrectIndicator = '&#x2718;';
-var YourScoreIs = 'Tu puntuacion es:';
+function ItemState(){
+	this.ClueGiven = false;
+	this.HintsAndChecks = 0;
+	this.MatchedAnswerLength = 0;
+	this.ItemScore = 0;
+	this.AnsweredCorrectly = false;
+	this.Guesses = new Array();
+	return this;
+}
 
-//New for 6.2.2.0
-var CompletedSoFar = 'Preguntas contestadas hasta este punto:';
-var ExerciseCompleted = 'Ejercicio completado.';
-var ShowCompletedSoFar = true;
-
-var ContinuousScoring = true;
-var CorrectFirstTime = 'Respuestas correctas al primer intento:';
-var ShowCorrectFirstTime = true;
-var ShuffleQs = false;
-var ShuffleAs = false;
-var DefaultRight = 'Correcto,';
-var DefaultWrong = 'Incorrecto, intentalo de nuevo.';
-var QsToShow = 6;
-var Score = 0;
-var Finished = false;
-var Qs = null;
-var QArray = new Array();
-var ShowingAllQuestions = false;
-var ShowAllQuestionsCaption = 'Mostrar todas las preguntas';
-var ShowOneByOneCaption = 'Mostrar preguntas de una en una';
-var State = new Array();
 var Feedback = '';
-var TimeOver = false;
-var strInstructions = '';
+var Correct = 'Correcto';
+var Incorrect = 'Algunas respuestas no son correctas'; 
+var GiveHint = 'Se ha a&#x00F1;adido una letra correcta';
+var CaseSensitive = false;
+var YourScoreIs = 'Tu puntuacion es:';
+var Finished = false;
 var Locked = false;
+var Score = 0;
+var CurrentWord = 0;
+var Guesses = '';
+var TimeOver = false;
 
-//The following variable can be used to add a message explaining that
-//the question is finished, so no further marking will take place.
-var strQuestionFinished = '';
+I = new Array();
 
-function CompleteEmptyFeedback(){
-	var QNum, ANum;
-	for (QNum=0; QNum<I.length; QNum++){
-//Only do this if not multi-select
-		if (I[QNum][2] != '3'){
-  		for (ANum = 0; ANum<I[QNum][3].length; ANum++){
-  			if (I[QNum][3][ANum][1].length < 1){
-  				if (I[QNum][3][ANum][2] > 0){
-  					I[QNum][3][ANum][1] = DefaultRight;
-  				}
-  				else{
-  					I[QNum][3][ANum][1] = DefaultWrong;
-  				}
-  			}
-  		}
-		}
-	}
-}
+I[0] = new Array();
+I[0][1] = new Array();
+I[0][1][0] = new Array();
+I[0][1][0][0] = '\u0068\u0065\u0072\u006D\u006F\u0073\u0061';
+I[0][2]='';
 
-function SetUpQuestions(){
-	var AList = new Array(); 
-	var QList = new Array();
-	var i, j;
-	Qs = document.getElementById('Questions');
-	while (Qs.getElementsByTagName('li').length > 0){
-		QList.push(Qs.removeChild(Qs.getElementsByTagName('li')[0]));
-	}
-	var DumpItem = 0;
-	if (QsToShow > QList.length){
-		QsToShow = QList.length;
-	}
-	while (QsToShow < QList.length){
-		DumpItem = Math.floor(QList.length*Math.random());
-		for (j=DumpItem; j<(QList.length-1); j++){
-			QList[j] = QList[j+1];
-		}
-		QList.length = QList.length-1;
-	}
-	if (ShuffleQs == true){
-		QList = Shuffle(QList);
-	}
-	if (ShuffleAs == true){
-		var As;
-		for (var i=0; i<QList.length; i++){
-			As = QList[i].getElementsByTagName('ol')[0];
-			if (As != null){
-  			AList.length = 0;
-				while (As.getElementsByTagName('li').length > 0){
-					AList.push(As.removeChild(As.getElementsByTagName('li')[0]));
-				}
-				AList = Shuffle(AList);
-				for (j=0; j<AList.length; j++){
-					As.appendChild(AList[j]);
-				}
-			}
-		}
-	}
-	
-	for (i=0; i<QList.length; i++){
-		Qs.appendChild(QList[i]);
-		QArray[QArray.length] = QList[i];
-	}
+I[1] = new Array();
+I[1][1] = new Array();
+I[1][1][0] = new Array();
+I[1][1][0][0] = '\u0065\u006E\u0073\u0065\u00F1\u00F3';
+I[1][2]='';
 
-//Show the first item
-	QArray[0].style.display = '';
-	
-//Now hide all except the first item
-	for (i=1; i<QArray.length; i++){
-		QArray[i].style.display = 'none';
-	}		
-	SetQNumReadout();
-	
-	SetFocusToTextbox();
-}
+I[2] = new Array();
+I[2][1] = new Array();
+I[2][1][0] = new Array();
+I[2][1][0][0] = '\u0074\u0065\u006A\u0065\u0072';
+I[2][2]='';
 
-function SetFocusToTextbox(){
-//if there's a textbox, set the focus in it
-	if (QArray[CurrQNum].getElementsByTagName('input')[0] != null){
-		QArray[CurrQNum].getElementsByTagName('input')[0].focus();
-//and show a keypad if there is one
-		if (document.getElementById('CharacterKeypad') != null){
-			document.getElementById('CharacterKeypad').style.display = 'block';
-		}
-	}
-	else{
-  	if (QArray[CurrQNum].getElementsByTagName('textarea')[0] != null){
-  		QArray[CurrQNum].getElementsByTagName('textarea')[0].focus();	
-//and show a keypad if there is one
-			if (document.getElementById('CharacterKeypad') != null){
-				document.getElementById('CharacterKeypad').style.display = 'block';
-			}
-		}
-//This added for 6.0.4.11: hide accented character buttons if no textbox
-		else{
-			if (document.getElementById('CharacterKeypad') != null){
-				document.getElementById('CharacterKeypad').style.display = 'none';
-			}
-		}
-	}
-}
+I[3] = new Array();
+I[3][1] = new Array();
+I[3][1][0] = new Array();
+I[3][1][0][0] = '\u0061';
+I[3][2]='';
 
-function ChangeQ(ChangeBy){
-//The following line prevents moving to another question until the current
-//question is answered correctly. Uncomment it to enable this behaviour. 
-//	if (State[CurrQNum][0] == -1){return;}
-	if (((CurrQNum + ChangeBy) < 0)||((CurrQNum + ChangeBy) >= QArray.length)){return;}
-	QArray[CurrQNum].style.display = 'none';
-	CurrQNum += ChangeBy;
-	QArray[CurrQNum].style.display = '';
-//Undocumented function added 10/12/2004
-	ShowSpecialReadingForQuestion();
-	SetQNumReadout();
-	SetFocusToTextbox();
-}
+I[4] = new Array();
+I[4][1] = new Array();
+I[4][1][0] = new Array();
+I[4][1][0][0] = '\u0063\u0075\u0065\u0072\u0070\u006F';
+I[4][2]='';
 
-var HiddenReadingShown = false;
-function ShowSpecialReadingForQuestion(){
-//Undocumented function for showing specific reading text elements which change with each question
-//Added on 10/12/2004
-	if (document.getElementById('ReadingDiv') != null){
-		if (HiddenReadingShown == true){
-			document.getElementById('ReadingDiv').innerHTML = '';
-		}
-		if (QArray[CurrQNum] != null){
-//Fix for 6.0.4.25
-			var Children = QArray[CurrQNum].getElementsByTagName('div');
-			for (var i=0; i<Children.length; i++){
-			if (Children[i].className=="HiddenReading"){
-					document.getElementById('ReadingDiv').innerHTML = Children[i].innerHTML;
-					HiddenReadingShown = true;
-//Hide the ShowAllQuestions button to avoid confusion
-					if (document.getElementById('ShowMethodButton') != null){
-						document.getElementById('ShowMethodButton').style.display = 'none';
-					}
-				}
-			}	
-		}
-	}
-}
+I[5] = new Array();
+I[5][1] = new Array();
+I[5][1][0] = new Array();
+I[5][1][0][0] = '\u0068\u0061\u0062\u00ED\u0061';
+I[5][2]='';
 
-function SetQNumReadout(){
-	document.getElementById('QNumReadout').innerHTML = (CurrQNum+1) + ' / ' + QArray.length;
-	if ((CurrQNum+1) >= QArray.length){
-		if (document.getElementById('NextQButton') != null){
-			document.getElementById('NextQButton').style.visibility = 'hidden';
-		}
-	}
-	else{
-		if (document.getElementById('NextQButton') != null){
-			document.getElementById('NextQButton').style.visibility = 'visible';
-		}
-	}
-	if (CurrQNum <= 0){
-		if (document.getElementById('PrevQButton') != null){
-			document.getElementById('PrevQButton').style.visibility = 'hidden';
-		}
-	}
-	else{
-		if (document.getElementById('PrevQButton') != null){
-			document.getElementById('PrevQButton').style.visibility = 'visible';
-		}
-	}
-}
+I[6] = new Array();
+I[6][1] = new Array();
+I[6][1][0] = new Array();
+I[6][1][0][0] = '\u006C\u006C\u0061\u006D\u00F3';
+I[6][2]='';
 
-var I=new Array();
-I[0]=new Array();I[0][0]=100;
-I[0][1]='';
-I[0][2]='0';
-I[0][3]=new Array();
-I[0][3][0]=new Array('perderse entre las nubes.','Intentalo de nuevo.',0,0,1);
-I[0][3][1]=new Array('cocinar con yuca y ma\u00EDz.','Correcto.',1,100,1);
-I[0][3][2]=new Array('fabricar ollas de barro.','Intentalo de nuevo.',0,0,1);
-I[0][3][3]=new Array('crear lluvias y tormentas.','Intentalo de nuevo.',0,0,1);
-I[1]=new Array();I[1][0]=100;
-I[1][1]='';
-I[1][2]='0';
-I[1][3]=new Array();
-I[1][3][0]=new Array('se perdi\u00F3 entre las nubes y subi\u00F3 al cielo.','Correcto.',1,100,1);
-I[1][3][1]=new Array('se hizo maestra de los ind\u00EDgenas cat\u00EDos.','Intentalo de nuevo',0,0,1);
-I[1][3][2]=new Array('ense\u00F1\u00F3 a sus hermanos a sembrar y a tejer.','Intentalo de nuevo',0,0,1);
-I[1][3][3]=new Array('pint\u00F3 de colores sus dientes y su cuerpo.','Intentalo de nuevo',0,0,1);
-I[2]=new Array();I[2][0]=100;
-I[2][1]='';
-I[2][2]='0';
-I[2][3]=new Array();
-I[2][3][0]=new Array('Los castigos que recib\u00EDa el pueblo cat\u00EDo.','Intentalo de nuevo.',0,0,1);
-I[2][3][1]=new Array('La fuerza destructora de las tormentas.','Correcto',1,100,1);
-I[2][3][2]=new Array('La maldad de Dabeiba y de su padre.','Intentalo de nuevo.',0,0,1);
-I[2][3][3]=new Array('Las fuertes corrientes de las quebradas.','Intentalo de nuevo.',0,0,1);
-I[3]=new Array();I[3][0]=100;
-I[3][1]='';
-I[3][2]='0';
-I[3][3]=new Array();
-I[3][3][0]=new Array('era la hija favorita del Se\u00F1or del cielo.','Intentalo de nuevo.',0,0,1);
-I[3][3][1]=new Array('ense\u00F1\u00F3 a sus hermanos secretos prohibidos.','Intentalo de nuevo.',0,0,1);
-I[3][3][2]=new Array('nunca regres\u00F3 junto a sus hermanos cat\u00EDos.','Intentalo de nuevo.',0,0,1);
-I[3][3][3]=new Array('se transform\u00F3 en agua de lluvia y de tormentas.','Correcto',1,100,1);
-I[4]=new Array();I[4][0]=100;
-I[4][1]='';
-I[4][2]='0';
-I[4][3]=new Array();
-I[4][3][0]=new Array('Su padre estaba decepcionado por su labor.','Intentalo de nuevo.',0,0,1);
-I[4][3][1]=new Array('Sus hermanos eran desagradecidos con ella.','Intentalo de nuevo.',0,0,1);
-I[4][3][2]=new Array('Sus labores deb\u00EDan continuar en otro pueblo.','Intentalo de nuevo.',0,0,1);
-I[4][3][3]=new Array('Su pueblo ya no la necesitaba para sobrevivir.','Correcto.',1,100,1);
-I[5]=new Array();I[5][0]=100;
-I[5][1]='';
-I[5][2]='0';
-I[5][3]=new Array();
-I[5][3][0]=new Array('La gente ha olvidado el poder de la lluvia y de las tormentas.','Intentalo de nuevo.',0,0,1);
-I[5][3][1]=new Array('La desaparici\u00F3n de Dabeiba es un misterio a\u00FAn sin resolver.','Intentalo de nuevo.',0,0,1);
-I[5][3][2]=new Array('Es gracias a Dabeiba que las lluvias siguen llegando a la tierra.','Correcto.',1,100,1);
-I[5][3][3]=new Array('Dabeiba y su padre son los culpables del invierno en Antioquia.','Intentalo de nuevo.',0,0,1);
+I[7] = new Array();
+I[7][1] = new Array();
+I[7][1][0] = new Array();
+I[7][1][0][0] = '\u006C\u0061';
+I[7][2]='';
 
+I[8] = new Array();
+I[8][1] = new Array();
+I[8][1][0] = new Array();
+I[8][1][0][0] = '\u0079';
+I[8][2]='';
+
+I[9] = new Array();
+I[9][1] = new Array();
+I[9][1][0] = new Array();
+I[9][1][0][0] = '\u0065\u0072\u0061';
+I[9][2]='';
+
+I[10] = new Array();
+I[10][1] = new Array();
+I[10][1][0] = new Array();
+I[10][1][0][0] = '\u0073\u006F\u0062\u0072\u0065';
+I[10][2]='';
+
+I[11] = new Array();
+I[11][1] = new Array();
+I[11][1][0] = new Array();
+I[11][1][0][0] = '\u0048\u006F\u0079';
+I[11][2]='';
+
+I[12] = new Array();
+I[12][1] = new Array();
+I[12][1][0] = new Array();
+I[12][1][0][0] = '\u0064\u0061\u00F1\u006F';
+I[12][2]='';
+
+I[13] = new Array();
+I[13][1] = new Array();
+I[13][1][0] = new Array();
+I[13][1][0][0] = '\u0072\u0065\u0063\u0075\u0065\u0072\u0064\u0065\u006E';
+I[13][2]='';
+
+
+State = new Array();
 
 function StartUp(){
-
-//If there's only one question, no need for question navigation controls
-	if (QsToShow < 2){
-		document.getElementById('QNav').style.display = 'none';
+//Show a keypad if there is one	(added bugfix for 6.0.4.12)
+	if (document.getElementById('CharacterKeypad') != null){
+		document.getElementById('CharacterKeypad').style.display = 'block';
 	}
 	
-//Stash the instructions so they can be redisplayed
-	strInstructions = document.getElementById('InstructionsDiv').innerHTML;
-	
 
-	
 
-	
 
-	
-	CompleteEmptyFeedback();
 
-	SetUpQuestions();
+
+	PreloadImages('data:image/jpeg;base64,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');
+
+
+	var i = 0;
+
+	State.length = 0;
+	for (i=0; i<I.length; i++){
+		State[i] = new ItemState();
+	}
+	
 	ClearTextBoxes();
-	CreateStatusArray();
 	
 
-	
-//Check search string for q parameter
-	if (document.location.search.length > 0){
-		if (ShuffleQs == false){
-			var JumpTo = parseInt(document.location.search.substring(1,document.location.search.length))-1;
-			if (JumpTo <= QsToShow){
-				ChangeQ(JumpTo);
-			}
-		}
-	}
-//Undocumented function added 10/12/2004
-	ShowSpecialReadingForQuestion();
+
 }
 
-function ShowHideQuestions(){
-	document.getElementById('ShowMethodButton').style.display = 'none';
-	if (ShowingAllQuestions == false){
-		for (var i=0; i<QArray.length; i++){
-				QArray[i].style.display = '';
-			}
-		document.getElementById('Questions').style.listStyleType = 'decimal';
-		document.getElementById('OneByOneReadout').style.display = 'none';
-		document.getElementById('ShowMethodButton').innerHTML = ShowOneByOneCaption;
-		ShowingAllQuestions = true;
-	}
-	else{
-		for (var i=0; i<QArray.length; i++){
-				if (i != CurrQNum){
-					QArray[i].style.display = 'none';
-				}
-			}
-		document.getElementById('Questions').style.listStyleType = 'none';
-		document.getElementById('OneByOneReadout').style.display = '';
-		document.getElementById('ShowMethodButton').innerHTML = ShowAllQuestionsCaption;
-		ShowingAllQuestions = false;	
-	}
-	document.getElementById('ShowMethodButton').style.display = 'inline';
+function ShowClue(ItemNum){
+	if (Locked == true){return;}
+	State[ItemNum].ClueGiven = true;
+	ShowMessage(I[ItemNum][2]);
 }
 
-function CreateStatusArray(){
-	var QNum, ANum;
-//For each item in the item array
-	for (QNum=0; QNum<I.length; QNum++){
-//Check if the question still exists (hasn't been nuked by showing a random selection)
-		if (document.getElementById('Q_' + QNum) != null){
-			State[QNum] = new Array();
-			State[QNum][0] = -1; //Score for this q; -1 shows question not done yet
-			State[QNum][1] = new Array(); //answers
-			for (ANum = 0; ANum<I[QNum][3].length; ANum++){
-				State[QNum][1][ANum] = 0; //answer not chosen yet; when chosen, will store its position in the series of choices
-			}
-			State[QNum][2] = 0; //tries at this q so far
-			State[QNum][3] = 0; //incrementing percent-correct values of selected answers
-			State[QNum][4] = 0; //penalties incurred for hints
-			State[QNum][5] = ''; //Sequence of answers chosen by number
-		}
-		else{
-			State[QNum] = null;
+function SaveCurrentAnswers(){
+	var Ans = '';
+	for (var i=0; i<I.length; i++){
+		Ans = GetGapValue(i);
+		if ((Ans.length > 0)&&(Ans != State[i].Guesses[State[i].Guesses.length-1])){
+			State[i].Guesses[State[i].Guesses.length] = Ans;
 		}
 	}
 }
 
-
-
-function CheckMCAnswer(QNum, ANum, Btn){
-//if question doesn't exist, bail
-	if (State[QNum].length < 1){return;}
-	
-//Get the feedback
-	Feedback = I[QNum][3][ANum][1];
-	
-//Now show feedback and bail if question already complete
-	if (State[QNum][0] > -1){
-//Add an extra message explaining that the question
-// is finished if defined by the user
-		if (strQuestionFinished.length > 0){Feedback += '<br />' + strQuestionFinished;}
-//Show the feedback
-		ShowMessage(Feedback);
-//New for 6.2.2.1: If you want to mark an answer as correct even when it's the final choice, uncomment this line.
-//		if (I[QNum][3][ANum][2] >= 1){Btn.innerHTML = CorrectIndicator;}else{Btn.innerHTML = IncorrectIndicator;}	
-		return;
+function CompileGuesses(){
+	var F = document.getElementById('store');
+	if (F != null){
+		var Temp = '<?xml version="1.0"?><hpnetresult><fields>';
+		var GapLabel = '';
+		for (var i=0; i<State.length; i++){
+			GapLabel = 'Gap ' + (i+1).toString();
+			Temp += '<field><fieldname>' + GapLabel + '</fieldname>';
+			Temp += '<fieldtype>student-responses</fieldtype><fieldlabel>' + GapLabel + '</fieldlabel>';
+			Temp += '<fieldlabelid>JClozeStudentResponses</fieldlabelid><fielddata>';
+			for (var j=0; j<State[i].Guesses.length; j++){
+				if (j>0){Temp += '| ';}
+				Temp += State[i].Guesses[j] + ' ';	
+			}	
+  		Temp += '</fielddata></field>';
+		}
+		Temp += '</fields></hpnetresult>';
+		Detail = Temp;
 	}
-	
-//Hide the button while processing
-	Btn.style.display = 'none';
+}
 
-//Increment the number of tries
-	State[QNum][2]++;
-	
-//Add the percent-correct value of this answer
-	State[QNum][3] += I[QNum][3][ANum][3];
-	
-//Store the try number in the answer part of the State array, for tracking purposes
-	State[QNum][1][ANum] = State[QNum][2];
-	if (State[QNum][5].length > 0){State[QNum][5] += ' | ';}
-	State[QNum][5] += String.fromCharCode(65+ANum);
-	
-//Should this answer be accepted as correct?
-	if (I[QNum][3][ANum][2] < 1){
-//It's wrong
+function CheckAnswers(){
+	if (Locked == true){return;}
+	SaveCurrentAnswers();
+	var AllCorrect = true;
 
-//Mark the answer
-		Btn.innerHTML = IncorrectIndicator;
-		
-//Remove any previous score unless exercise is finished (6.0.3.8+)
-		if (Finished == false){
-			WriteToInstructions(strInstructions);
-		}	
-		
-//Check whether this leaves just one MC answer unselected, in which case the Q is terminated
-		var RemainingAnswer = FinalAnswer(QNum);
-		if (RemainingAnswer > -1){
-//Behave as if the last answer had been selected, but give no credit for it
-//Increment the number of tries
-			State[QNum][2]++;		
-		
-//Calculate the score for this question
-			CalculateMCQuestionScore(QNum);
-			
-//Get the overall score and add it to the feedback
-			CalculateOverallScore();
-//New for 6.2.2.1
-			var QsDone = CheckQuestionsCompleted();
-			if ((ContinuousScoring == true)||(Finished == true)){
-				Feedback += '<br />' + YourScoreIs + ' ' + Score + '%.' + '<br />' + QsDone;
-				WriteToInstructions(YourScoreIs + ' ' + Score + '%.' + '<br />' + QsDone);
+//Check each answer
+	for (var i = 0; i<I.length; i++){
+
+		if (State[i].AnsweredCorrectly == false){
+//If it's right, calculate its score
+			if (CheckAnswer(i, true) > -1){
+				var TotalChars = GetGapValue(i).length;
+				State[i].ItemScore = (TotalChars-State[i].HintsAndChecks)/TotalChars;
+				if (State[i].ClueGiven == true){State[i].ItemScore /= 2;}
+				if (State[i].ItemScore <0 ){State[i].ItemScore = 0;}
+				State[i].AnsweredCorrectly = true;
+//Drop the correct answer into the page, replacing the text box
+				SetCorrectAnswer(i, GetGapValue(i));
 			}
 			else{
-				WriteToInstructions(QsDone);
+//Otherwise, increment the hints for this item, as a penalty
+				State[i].HintsAndChecks++;
+
+//then set the flag
+				AllCorrect = false;
 			}
 		}
 	}
-	else{
-//It's right
-//Mark the answer
-		Btn.innerHTML = CorrectIndicator;
-				
-//Calculate the score for this question
-		CalculateMCQuestionScore(QNum);
-		
-//New for 6.2.2.0
-		var QsDone = CheckQuestionsCompleted();
 
-//Get the overall score and add it to the feedback
-		if (ContinuousScoring == true){
-			CalculateOverallScore();
-			if ((ContinuousScoring == true)||(Finished == true)){
-				Feedback += '<br />' + YourScoreIs + ' ' + Score + '%.' + '<br />' + QsDone;
-				WriteToInstructions(YourScoreIs + ' ' + Score + '%.' + '<br />' + QsDone);
-			}
-		}
-		else{
-			WriteToInstructions(QsDone);
-		}
-	}
-	
-//Show the button again
-	Btn.style.display = 'inline';
-	
-//Finally, show the feedback	
-	ShowMessage(Feedback);
-	
-//Check whether all questions are now done
-	CheckFinished();
-}
-
-function CalculateMCQuestionScore(QNum){
-	var Tries = State[QNum][2] + State[QNum][4]; //include tries and hint penalties
-	var PercentCorrect = State[QNum][3];
-	var TotAns = GetTotalMCAnswers(QNum);
-	var HintPenalties = State[QNum][4];
-	
-//Make sure it's not already complete
-
-	if (State[QNum][0] < 0){
-//Allow for Hybrids
-		if (HintPenalties >= 1){
-			State[QNum][0] = 0;
-		}
-		else{
-//This line calculates the score for this question
-			if (TotAns == 1){
-				State[QNum][0] = 1;
-			}
-			else{
-				State[QNum][0] = ((TotAns-((Tries*100)/State[QNum][3]))/(TotAns-1));
-			}
-		}
-//Fix for Safari bug added for version 6.0.3.42 (negative infinity problem)
-		if ((State[QNum][0] < 0)||(State[QNum][0] == Number.NEGATIVE_INFINITY)){
-			State[QNum][0] = 0;
-		}
-	}
-}
-
-function GetTotalMCAnswers(QNum){
-	var Result = 0;
-	for (var ANum=0; ANum<I[QNum][3].length; ANum++){
-		if (I[QNum][3][ANum][4] == 1){ //This is an MC answer
-			Result++;
-		}
-	}
-	return Result;
-}
-
-function FinalAnswer(QNum){
-	var UnchosenAnswers = 0;
-	var FinalAnswer = -1;
-	for (var ANum=0; ANum<I[QNum][3].length; ANum++){
-		if (I[QNum][3][ANum][4] == 1){ //This is an MC answer
-			if (State[QNum][1][ANum] < 1){ //This answer hasn't been chosen yet
-				UnchosenAnswers++;
-				FinalAnswer = ANum;
-			}
-		}
-	}
-	if (UnchosenAnswers == 1){
-		return FinalAnswer;
-	}
-	else{
-		return -1;
-	}
-}
-
-
-
-
-
-function CalculateOverallScore(){
-	var TotalWeighting = 0;
+//Calculate the total score
 	var TotalScore = 0;
+	for (i=0; i<State.length; i++){
+		TotalScore += State[i].ItemScore;
+	}
+	TotalScore = Math.floor((TotalScore * 100)/I.length);
+
+//Compile the output
+	Output = '';
+
+	if (AllCorrect == true){
+		Output = Correct + '<br />';
+	}
+
+	Output += YourScoreIs + ' ' + TotalScore + '%.<br />';
+	if (AllCorrect == false){
+		Output += Incorrect;
+	}
+	ShowMessage(Output);
+	setTimeout('WriteToInstructions(Output)', 50);
 	
-	for (var QNum=0; QNum<State.length; QNum++){
-		if (State[QNum] != null){
-			if (State[QNum][0] > -1){
-				TotalWeighting += I[QNum][0];
-				TotalScore += (I[QNum][0] * State[QNum][0]);
-			}
-		}
-	}
-	if (TotalWeighting > 0){
-		Score = Math.floor((TotalScore/TotalWeighting)*100);
-	}
-	else{
-//if TotalWeighting is 0, no questions so far have any value, so 
-//no penalty should be shown.
-		Score = 100; 
-	}
-}
-
-//New for 6.2.2.0
-function CheckQuestionsCompleted(){
-	if (ShowCompletedSoFar == false){return '';}
-	var QsCompleted = 0;
-	for (var QNum=0; QNum<State.length; QNum++){
-		if (State[QNum] != null){
-			if (State[QNum][0] >= 0){
-				QsCompleted++;
-			}
-		}
-	}
-//Fixes for 6.2.2.2
-	if (QsCompleted >= QArray.length){
-		return ExerciseCompleted;
-	}
-	else{
-		return CompletedSoFar + ' ' + QsCompleted + '/' + QArray.length + '.';
-	}
-}
-
-function CheckFinished(){
-	var FB = '';
-	var AllDone = true;
-	for (var QNum=0; QNum<State.length; QNum++){
-		if (State[QNum] != null){
-			if (State[QNum][0] < 0){
-				AllDone = false;
-			}
-		}
-	}
-	if (AllDone == true){
+	Score = TotalScore;
+	CompileGuesses();
 	
-//Report final score and submit if necessary
-		CalculateOverallScore();
-		FB = YourScoreIs + ' ' + Score + '%.';
-		if (ShowCorrectFirstTime == true){
-			var CFT = 0;
-			for (QNum=0; QNum<State.length; QNum++){
-				if (State[QNum] != null){
-					if (State[QNum][0] >= 1){
-						CFT++;
-					}
-				}
-			}
-			FB += '<br />' + CorrectFirstTime + ' ' + CFT + '/' + QsToShow;
-		}
-		
-//New for 6.2.2.0
-		FB += '<br />' + ExerciseCompleted;
-		
-		WriteToInstructions(FB);
-		
-		Finished == true;
-
-
+	if ((AllCorrect == true)||(Finished == true)){
+	
 
 
 		TimeOver = true;
 		Locked = true;
-		
-
-
 		Finished = true;
-		Detail = '<?xml version="1.0"?><hpnetresult><fields>';
-		for (QNum=0; QNum<State.length; QNum++){
-			if (State[QNum] != null){
-				if (State[QNum][5].length > 0){
-					Detail += '<field><fieldname>Question #' + (QNum+1) + '</fieldname><fieldtype>question-tracking</fieldtype><fieldlabel>Q ' + (QNum+1) + '</fieldlabel><fieldlabelid>QuestionTrackingField</fieldlabelid><fielddata>' + State[QNum][5] + '</fielddata></field>';
-				}
-			}
-		}
-		Detail += '</fields></hpnetresult>';
 	}
 
 }
 
+function TrackFocus(BoxNumber){
+	CurrentWord = BoxNumber;
+	InTextBox = true;
+}
 
+function LeaveGap(){
+	InTextBox = false;
+}
+
+function CheckBeginning(Guess, Answer){
+	var OutString = '';
+	var i = 0;
+	var UpperGuess = '';
+	var UpperAnswer = '';
+
+	if (CaseSensitive == false) {
+		UpperGuess = Guess.toUpperCase();
+		UpperAnswer = Answer.toUpperCase();
+	}
+	else {
+		UpperGuess = Guess;
+		UpperAnswer = Answer;
+	}
+
+	while (UpperGuess.charAt(i) == UpperAnswer.charAt(i)) {
+		OutString += Guess.charAt(i);
+		i++;
+	}
+	OutString += Answer.charAt(i);
+	return OutString;
+}
+
+function GetGapValue(GNum){
+	var RetVal = '';
+	if ((GNum<0)||(GNum>=I.length)){return RetVal;}
+	if (document.getElementById('Gap' + GNum) != null){
+		RetVal = document.getElementById('Gap' + GNum).value;
+		RetVal = TrimString(RetVal);
+	}
+	else{
+		RetVal = State[GNum].Guesses[State[GNum].Guesses.length-1];
+	}
+	return RetVal;
+}
+
+function SetGapValue(GNum, Val){
+	if ((GNum<0)||(GNum>=I.length)){return;}
+	if (document.getElementById('Gap' + GNum) != null){
+		document.getElementById('Gap' + GNum).value = Val;
+		document.getElementById('Gap' + GNum).focus();
+	}
+}
+
+function SetCorrectAnswer(GNum, Val){
+	if ((GNum<0)||(GNum>=I.length)){return;}
+	if (document.getElementById('GapSpan' + GNum) != null){
+		document.getElementById('GapSpan' + GNum).innerHTML = Val;
+	}
+}
+
+function FindCurrent() {
+	var x = 0;
+	FoundCurrent = -1;
+
+//Test the current word:
+//If its state is not set to already correct, check the word.
+	if (State[CurrentWord].AnsweredCorrectly == false){
+		if (CheckAnswer(CurrentWord, false) < 0){
+			return CurrentWord;
+		}
+	}
+	
+	x=CurrentWord + 1;
+	while (x<I.length){
+		if (State[x].AnsweredCorrectly == false){
+			if (CheckAnswer(x, false) < 0){
+				return x;
+			}
+		}
+	x++;	
+	}
+
+	x = 0;
+	while (x<CurrentWord){
+		if (State[x].AnsweredCorrectly == false){
+			if (CheckAnswer(x, false) < 0){
+				return x;
+			}
+		}
+	x++;	
+	}
+	return FoundCurrent;
+}
+
+function CheckAnswer(GapNum, MarkAnswer){
+	var Guess = GetGapValue(GapNum);
+	var UpperGuess = '';
+	var UpperAnswer = '';
+	if (CaseSensitive == false){
+		UpperGuess = Guess.toUpperCase();
+	}
+	else{
+		UpperGuess = Guess;
+	}
+	var Match = -1;
+	for (var i = 0; i<I[GapNum][1].length; i++){
+		if (CaseSensitive == false){
+			UpperAnswer = I[GapNum][1][i][0].toUpperCase();
+		}
+		else{
+			UpperAnswer = I[GapNum][1][i][0];
+		}
+		if (TrimString(UpperGuess) == UpperAnswer){
+			Match = i;
+			if (MarkAnswer == true){
+				State[GapNum].AnsweredCorrectly = true;
+			}
+		}
+	}
+	return Match;
+}
+
+function GetHint(GapNum){
+	Guess = GetGapValue(GapNum);
+
+	if (CheckAnswer(GapNum, false) > -1){return ''}
+	RightBits = new Array();
+	for (var i=0; i<I[GapNum][1].length; i++){
+		RightBits[i] = CheckBeginning(Guess, I[GapNum][1][i][0]);
+	}
+	var RightOne = FindLongest(RightBits);
+	var Result = I[GapNum][1][RightOne][0].substring(0,RightBits[RightOne].length);
+//Add another char if the last one is a space
+	if (Result.charAt(Result.length-1) == ' '){
+		Result = I[GapNum][1][RightOne][0].substring(0,RightBits[RightOne].length+1);
+	}
+	return Result;
+}
+
+function ShowHint(){
+	if (document.getElementById('FeedbackDiv').style.display == 'block'){return;}
+	if (Locked == true){return;}
+	var CurrGap = FindCurrent();
+	if (CurrGap < 0){return;}
+
+	var HintString = GetHint(CurrGap);
+
+	if (HintString.length > 0){
+		SetGapValue(CurrGap, HintString);
+		State[CurrGap].HintsAndChecks += 1;
+	}
+	ShowMessage(GiveHint);
+}
+
+function TypeChars(Chars){
+	var CurrGap = FindCurrent();
+	if (CurrGap < 0){return;}
+	var box = document.getElementById('Gap' + CurrGap);
+
+	if (box != null){
+		var selObj = SelObj(box);
+		selObj.setSelText(Chars);
+	}
+}
 
 
 
@@ -1591,8 +1407,6 @@ function CheckFinished(){
 <div class="Titles">
 	<h2 class="ExerciseTitle">La lluvia</h2>
 
-	<h3 class="ExerciseSubtitle">JQuiz y JCloze</h3>
-
 
 
 </div>
@@ -1605,55 +1419,48 @@ function CheckFinished(){
 <div id="ContainerDiv">
 
 
-<div class="ReadingContainer">
-
-	<div id="Reading">
-
-		<div id="ReadingDiv">
-<h3 class="ExerciseSubtitle">La lluvia</h3><div class="ReadingText">Los ind&#x00ED;genas cat&#x00ED;os, de Antioquia, cuentan que la hermosa Dabeiba, hija del<br />Se&#x00F1;or del cielo, era una gran maestra; <br />ense&#x00F1;&#x00F3; a los ind&#x00ED;genas a sembrar yuca y ma&#x00ED;z, a tejer, a hacer ollas y otros objetos de barro, y a escoger los colores para pintarse los dientes y el cuerpo. <br />Cuando el padre de Dabeiba supo que su hija hab&#x00ED;a terminado su labor de maestra en la tierra, la llam&#x00F3; para que subiera al cielo.<br />Un d&#x00ED;a, al amanecer, la joven camin&#x00F3; hasta lo m&#x00E1;s alto del cerro Le&#x00F3;n y, desde<br />all&#x00ED;, subi&#x00F3; al cielo.<br />A pesar de que era muy temprano, y de que la neblina se levantaba sobre las quebradas, algunos la vieron perderse entre las nubes. <br />Hoy, desde el cielo, manda lluvias y tormentas, no para hacer da&#x00F1;o, sino para que sus hermanos en la Tierra la recuerden.</div>
-		</div>
-	</div>
-
-</div>
-
-
 
 <div class="ExerciseContainer">
 
-<div id="QNav" class="QuestionNavigation">
 
-<p style="text-align: right;">
-<button id="ShowMethodButton" class="FuncButton" onclick="ShowHideQuestions(); return false;">Mostrar todas las preguntas</button>
-</p>
 
-<div id="OneByOneReadout">
-<button id="PrevQButton" class="FuncButton" onclick="ChangeQ(-1); return false;">&lt;=</button>
 
-<span id="QNumReadout" class="QNum">&#160;</span>
 
-<button id="NextQButton" class="FuncButton" onclick="ChangeQ(1); return false;">=&gt;</button>
-<br />
-</div>
 
-</div>
+<!-- These top buttons hidden; reveal if required -->
+<!--
+<button id="CheckButton1" class="FuncButton" onclick="CheckAnswers()">&#160;Comprobar respuesta&#160;</button>
+
+
+<button class="FuncButton" onclick="ShowHint()">&#160;Pista&#160;</button>
+
+
+ -->
  
-<ol class="QuizQuestions" id="Questions">
-<li class="QuizQuestion" id="Q_0" style="display: none;"><div class="QuestionText">Seg&#x00FA;n el texto, Dabeiba ense&#x00F1;&#x00F3; a los cat&#x00ED;os a</div><ol class="MCAnswers"><li id="Q_0_0"><button class="FuncButton" id="Q_0_0_Btn" onclick="CheckMCAnswer(0,0,this)">&nbsp;&nbsp;?&nbsp;&nbsp;</button>&nbsp;&nbsp;perderse entre las nubes.</li><li id="Q_0_1"><button class="FuncButton" id="Q_0_1_Btn" onclick="CheckMCAnswer(0,1,this)">&nbsp;&nbsp;?&nbsp;&nbsp;</button>&nbsp;&nbsp;cocinar con yuca y ma&#x00ED;z.</li><li id="Q_0_2"><button class="FuncButton" id="Q_0_2_Btn" onclick="CheckMCAnswer(0,2,this)">&nbsp;&nbsp;?&nbsp;&nbsp;</button>&nbsp;&nbsp;fabricar ollas de barro.</li><li id="Q_0_3"><button class="FuncButton" id="Q_0_3_Btn" onclick="CheckMCAnswer(0,3,this)">&nbsp;&nbsp;?&nbsp;&nbsp;</button>&nbsp;&nbsp;crear lluvias y tormentas.</li></ol></li>
-<li class="QuizQuestion" id="Q_1" style="display: none;"><div class="QuestionText">Luego de subir al cerro Le&#x00F3;n, Dabeiba</div><ol class="MCAnswers"><li id="Q_1_0"><button class="FuncButton" id="Q_1_0_Btn" onclick="CheckMCAnswer(1,0,this)">&nbsp;&nbsp;?&nbsp;&nbsp;</button>&nbsp;&nbsp;se perdi&#x00F3; entre las nubes y subi&#x00F3; al cielo.</li><li id="Q_1_1"><button class="FuncButton" id="Q_1_1_Btn" onclick="CheckMCAnswer(1,1,this)">&nbsp;&nbsp;?&nbsp;&nbsp;</button>&nbsp;&nbsp;se hizo maestra de los ind&#x00ED;genas cat&#x00ED;os.</li><li id="Q_1_2"><button class="FuncButton" id="Q_1_2_Btn" onclick="CheckMCAnswer(1,2,this)">&nbsp;&nbsp;?&nbsp;&nbsp;</button>&nbsp;&nbsp;ense&#x00F1;&#x00F3; a sus hermanos a sembrar y a tejer.</li><li id="Q_1_3"><button class="FuncButton" id="Q_1_3_Btn" onclick="CheckMCAnswer(1,3,this)">&nbsp;&nbsp;?&nbsp;&nbsp;</button>&nbsp;&nbsp;pint&#x00F3; de colores sus dientes y su cuerpo.</li></ol></li>
-<li class="QuizQuestion" id="Q_2" style="display: none;"><div class="QuestionText">En el texto, la expresi&#x00F3;n &#x201C;no para hacer da&#x00F1;o&#x201D; se refiere a:</div><ol class="MCAnswers"><li id="Q_2_0"><button class="FuncButton" id="Q_2_0_Btn" onclick="CheckMCAnswer(2,0,this)">&nbsp;&nbsp;?&nbsp;&nbsp;</button>&nbsp;&nbsp;Los castigos que recib&#x00ED;a el pueblo<br />cat&#x00ED;o.</li><li id="Q_2_1"><button class="FuncButton" id="Q_2_1_Btn" onclick="CheckMCAnswer(2,1,this)">&nbsp;&nbsp;?&nbsp;&nbsp;</button>&nbsp;&nbsp;La fuerza destructora de las<br />tormentas.</li><li id="Q_2_2"><button class="FuncButton" id="Q_2_2_Btn" onclick="CheckMCAnswer(2,2,this)">&nbsp;&nbsp;?&nbsp;&nbsp;</button>&nbsp;&nbsp;La maldad de Dabeiba y de su<br />padre.</li><li id="Q_2_3"><button class="FuncButton" id="Q_2_3_Btn" onclick="CheckMCAnswer(2,3,this)">&nbsp;&nbsp;?&nbsp;&nbsp;</button>&nbsp;&nbsp;Las fuertes corrientes de las<br />quebradas.</li></ol></li>
-<li class="QuizQuestion" id="Q_3" style="display: none;"><div class="QuestionText">Del texto anterior se puede concluir que Dabeiba:</div><ol class="MCAnswers"><li id="Q_3_0"><button class="FuncButton" id="Q_3_0_Btn" onclick="CheckMCAnswer(3,0,this)">&nbsp;&nbsp;?&nbsp;&nbsp;</button>&nbsp;&nbsp;era la hija favorita del Se&#x00F1;or del<br />cielo.</li><li id="Q_3_1"><button class="FuncButton" id="Q_3_1_Btn" onclick="CheckMCAnswer(3,1,this)">&nbsp;&nbsp;?&nbsp;&nbsp;</button>&nbsp;&nbsp;ense&#x00F1;&#x00F3; a sus hermanos secretos<br />prohibidos.</li><li id="Q_3_2"><button class="FuncButton" id="Q_3_2_Btn" onclick="CheckMCAnswer(3,2,this)">&nbsp;&nbsp;?&nbsp;&nbsp;</button>&nbsp;&nbsp;nunca regres&#x00F3; junto a sus<br />hermanos cat&#x00ED;os.</li><li id="Q_3_3"><button class="FuncButton" id="Q_3_3_Btn" onclick="CheckMCAnswer(3,3,this)">&nbsp;&nbsp;?&nbsp;&nbsp;</button>&nbsp;&nbsp;se transform&#x00F3; en agua de lluvia y<br />de tormentas.</li></ol></li>
-<li class="QuizQuestion" id="Q_4" style="display: none;"><div class="QuestionText">Del regreso de Dabeiba al cielo por orden de su padre, se puede decir que:</div><ol class="MCAnswers"><li id="Q_4_0"><button class="FuncButton" id="Q_4_0_Btn" onclick="CheckMCAnswer(4,0,this)">&nbsp;&nbsp;?&nbsp;&nbsp;</button>&nbsp;&nbsp;Su padre estaba decepcionado por<br />su labor.</li><li id="Q_4_1"><button class="FuncButton" id="Q_4_1_Btn" onclick="CheckMCAnswer(4,1,this)">&nbsp;&nbsp;?&nbsp;&nbsp;</button>&nbsp;&nbsp;Sus hermanos eran<br />desagradecidos con ella.</li><li id="Q_4_2"><button class="FuncButton" id="Q_4_2_Btn" onclick="CheckMCAnswer(4,2,this)">&nbsp;&nbsp;?&nbsp;&nbsp;</button>&nbsp;&nbsp;Sus labores deb&#x00ED;an continuar en<br />otro pueblo.</li><li id="Q_4_3"><button class="FuncButton" id="Q_4_3_Btn" onclick="CheckMCAnswer(4,3,this)">&nbsp;&nbsp;?&nbsp;&nbsp;</button>&nbsp;&nbsp;Su pueblo ya no la necesitaba para<br />sobrevivir.</li></ol></li>
-<li class="QuizQuestion" id="Q_5" style="display: none;"><div class="QuestionText">Seg&#x00FA;n la manera como finaliza la historia, puede afirmarse que para los ind&#x00ED;genas<br />cat&#x00ED;os:</div><ol class="MCAnswers"><li id="Q_5_0"><button class="FuncButton" id="Q_5_0_Btn" onclick="CheckMCAnswer(5,0,this)">&nbsp;&nbsp;?&nbsp;&nbsp;</button>&nbsp;&nbsp;La gente ha olvidado el poder de la<br />lluvia y de las tormentas.</li><li id="Q_5_1"><button class="FuncButton" id="Q_5_1_Btn" onclick="CheckMCAnswer(5,1,this)">&nbsp;&nbsp;?&nbsp;&nbsp;</button>&nbsp;&nbsp;La desaparici&#x00F3;n de Dabeiba es un<br />misterio a&#x00FA;n sin resolver.</li><li id="Q_5_2"><button class="FuncButton" id="Q_5_2_Btn" onclick="CheckMCAnswer(5,2,this)">&nbsp;&nbsp;?&nbsp;&nbsp;</button>&nbsp;&nbsp;Es gracias a Dabeiba que las<br />lluvias siguen llegando a la tierra.</li><li id="Q_5_3"><button class="FuncButton" id="Q_5_3_Btn" onclick="CheckMCAnswer(5,3,this)">&nbsp;&nbsp;?&nbsp;&nbsp;</button>&nbsp;&nbsp;Dabeiba y su padre son los<br />culpables del invierno en Antioquia.</li></ol></li></ol>
+<div id="ClozeDiv">
+<form id="Cloze" method="post" autocomplete="off" onsubmit="return false;">
+<div class="ClozeBody">
+<img src="data:image/jpeg;base64,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" alt="???" title="???" width="???" height="???" style="display: block; margin-left: auto; margin-right: auto; text-align: center;"/><br />Los ind&#x00ED;genas cat&#x00ED;os, de Antioquia, cuentan que la <span class="GapSpan" id="GapSpan0"><input type="text" autocomplete="off" id="Gap0" onfocus="TrackFocus(0)" onblur="LeaveGap()" class="GapBox" size="7"/></span> Dabeiba, hija del Se&#x00F1;or del cielo, era una gran maestra;<br /><span class="GapSpan" id="GapSpan1"><input type="text" autocomplete="off" id="Gap1" onfocus="TrackFocus(1)" onblur="LeaveGap()" class="GapBox" size="6"/></span> a los ind&#x00ED;genas a sembrar yuca y ma&#x00ED;z, a <span class="GapSpan" id="GapSpan2"><input type="text" autocomplete="off" id="Gap2" onfocus="TrackFocus(2)" onblur="LeaveGap()" class="GapBox" size="6"/></span>, a hacer ollas y otros objetos de barro, y <span class="GapSpan" id="GapSpan3"><input type="text" autocomplete="off" id="Gap3" onfocus="TrackFocus(3)" onblur="LeaveGap()" class="GapBox" size="6"/></span> escoger los colores para pintarse los dientes y el <span class="GapSpan" id="GapSpan4"><input type="text" autocomplete="off" id="Gap4" onfocus="TrackFocus(4)" onblur="LeaveGap()" class="GapBox" size="6"/></span>. <br />Cuando el padre de Dabeiba supo que su hija <span class="GapSpan" id="GapSpan5"><input type="text" autocomplete="off" id="Gap5" onfocus="TrackFocus(5)" onblur="LeaveGap()" class="GapBox" size="6"/></span> terminado su labor de maestra en la tierra, la <span class="GapSpan" id="GapSpan6"><input type="text" autocomplete="off" id="Gap6" onfocus="TrackFocus(6)" onblur="LeaveGap()" class="GapBox" size="6"/></span> para que subiera al cielo.<br />Un d&#x00ED;a, al amanecer, <span class="GapSpan" id="GapSpan7"><input type="text" autocomplete="off" id="Gap7" onfocus="TrackFocus(7)" onblur="LeaveGap()" class="GapBox" size="6"/></span> joven camin&#x00F3; hasta lo m&#x00E1;s alto del cerro Le&#x00F3;n <span class="GapSpan" id="GapSpan8"><input type="text" autocomplete="off" id="Gap8" onfocus="TrackFocus(8)" onblur="LeaveGap()" class="GapBox" size="6"/></span>, desde all&#x00ED;, subi&#x00F3; al cielo. A pesar de que <span class="GapSpan" id="GapSpan9"><input type="text" autocomplete="off" id="Gap9" onfocus="TrackFocus(9)" onblur="LeaveGap()" class="GapBox" size="6"/></span> muy temprano, y de que la neblina se levantaba <span class="GapSpan" id="GapSpan10"><input type="text" autocomplete="off" id="Gap10" onfocus="TrackFocus(10)" onblur="LeaveGap()" class="GapBox" size="6"/></span> las quebradas, algunos la vieron perderse entre las nubes. <br /><br /><span class="GapSpan" id="GapSpan11"><input type="text" autocomplete="off" id="Gap11" onfocus="TrackFocus(11)" onblur="LeaveGap()" class="GapBox" size="6"/></span>,desde el cielo, manda lluvias y tormentas, no para hacer <span class="GapSpan" id="GapSpan12"><input type="text" autocomplete="off" id="Gap12" onfocus="TrackFocus(12)" onblur="LeaveGap()" class="GapBox" size="6"/></span>, sino para que sus hermanos en la Tierra la <span class="GapSpan" id="GapSpan13"><input type="text" autocomplete="off" id="Gap13" onfocus="TrackFocus(13)" onblur="LeaveGap()" class="GapBox" size="9"/></span>. 
+</div>
+</form>
+</div>
 
+
+
+<button id="CheckButton2" class="FuncButton" onclick="CheckAnswers()">&#160;Comprobar respuesta&#160;</button>
+
+
+<button class="FuncButton" onclick="ShowHint()">&#160;Pista&#160;</button>
 
 
 </div>
 
 </div>
+
 
 <div class="Feedback" id="FeedbackDiv">
 <div class="FeedbackText" id="FeedbackContent"></div>
-<button id="FeedbackOKButton" class="FuncButton" onclick="HideFeedback(); return false;">&#160;OK&#160;</button>
+<button id="FeedbackOKButton" class="FuncButton" onclick="HideFeedback(); return false;">&#160;Correcto&#160;</button>
 </div>
 
 <!-- BeginBottomNavButtons -->
